@@ -14,7 +14,7 @@ kQL.orm 使用手册（v1.0）
     4. kQL.orm不免费，按并发数收费，可下载体验版。
 
 
-> 变迁里程：
+**变迁里程：**
     1. kQL.orm原名(k.dbtool.engine数据访问中间件)
     2. 2013年6月发布了（k.dbtool.engine v1.0.0.0），基于存储过程的配置调用及代码生成。
     3. ......
@@ -157,7 +157,7 @@ kQL.orm 使用手册（v1.0）
         public String 产品名称 { get; set; }
         public String 分类编号 { get; set; }
         public Single 进价 { get; set; }
-        public Decimal 运费 { get; set; } 
+        public Decimal 运费 { get; set; }
         public Decimal 税率 { get; set; }
         public Decimal 零售价 { get; set; }
         public Double 会员折扣 { get; set; }
