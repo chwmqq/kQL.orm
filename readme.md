@@ -7,7 +7,7 @@ kQL.orm 使用手册（v1.0）
 ---
 **kQL.orm**是基于.Net 4.0平台的，针对MS-SQL数据库开发的一套轻量级数据访问层框架。小巧优雅，更重要的是功能强大到让你**脑洞打开**。几乎无需配置，就能快速上手！
 
-####kQL.orm须知
+#### kQL.orm须知
     kQL.orm支持的数据库只有一种SQL Server(2005+)，暂没有计划对其他数据库做扩展支持。
     kQL.orm更加注重的是实用性，所以无需与其他ORM产品去做性能的比较（但不等于说kQL.orm的性能就一塌糊涂）。
     BUG或改进，可提交： chwmqq@126.com
@@ -23,7 +23,7 @@ kQL.orm 使用手册（v1.0）
     2017年6月(k.dbtool.engine v1.0.0.9)正式更名为：kQL.orm v1.0，并面向市场开放。
 
 
-####kQL.orm概述
+#### kQL.orm概述
     kQL.orm产品采用(db first)数据库优先模式进行处理，即您需要先建好数据库。
     配套模型层生成工具（kQL.orm.cmdTool.exe）。通过该工具可以自动生成实体层（或者叫Entity层或Model层或...），即：表>>实体，视图>>实体，存储过程>> 实体。当数据库表结构修改后，只需重新执行一遍该工具，就自动同步了映射的实体。使用方便，可以使开发者更加专注于数据库本身的设计，更加集中精力关注于多个实体模型之间的逻辑处理。
     简化数据访问操作，提升开发效率。支持存储过程、视图、表的操作，支持复杂的嵌套查询（多表join、In子查询、Exists子查询），支持大批量数据插入（bulk insert），支持复杂的更新操作（update..from..）。
@@ -34,11 +34,12 @@ kQL.orm 使用手册（v1.0）
     支持上下文环境中调用方法、属性等动态计算的变量。（如：Where(user=>user.name == GetUserName() )，其中GetUserName()是上下文中的方法。
     实例对象的增、删、改，内置事务处理。对于所有的查询，使用的事务隔离级别READ UNCOMMITTED.
 
-####kQL.orm下载
+#### kQL.orm下载
 [kQL.orm v1.0 下载](http://pan.baidu.com/s/1pKF5gmR) 
 
-####kQL.orm价格
+#### kQL.orm价格
 > 支付宝账号：chwmqq@126.com 
+
 |  实例并发数   |   价格   |    适用对象    | license有效期 |
 | :------: | :----: | :--------: | :--------: |
 |  无限制并发   | ￥9,999 | 互联网或大型应用项目 |     永久     |
@@ -54,7 +55,7 @@ kQL.orm 使用手册（v1.0）
 目录
 ---
 
-####一、快速入门
+#### 一、快速入门
 1. 创建数据库 db-demo,并创建tb_user、tb_categories、tb_product、tb_order表,建表脚本在demo演示程序中
 2. 新建项目demo（如：路径：D:\demo），这里使用控制台程序，引用【kQL.orm.dll】，添加app.config配置文件，配置连接字符串
 ```
@@ -144,9 +145,9 @@ kQL.orm 使用手册（v1.0）
 
 
 
-####二、基础篇
+#### 二、基础篇
 
-#####1、实体生成（kQL.orm.cmdTool.exe）
+##### 1、实体生成（kQL.orm.cmdTool.exe）
     通过命令行工具，可以生成实体模型层代码。几乎支持数据库全部数据类型。
 ```
  public class tb_product
@@ -177,13 +178,13 @@ kQL.orm 使用手册（v1.0）
 
 
 
-#####2、必须知道的三大类型（DyQuery<T>、Dy、DyResult）
+##### 2、必须知道的三大类型（DyQuery<T>、Dy、DyResult）
 
->DyQuery<T>类型：定义各种查询的入口，一般形式：var query = new DyQuery<T>() ; //T为具体的类型
 ```
-    public class DyQuery<TLeft> : AbsDyQuery , ICriteria<TLeft>
-```
-```
+DyQuery<T>类型：定义各种查询的入口，一般形式：var query = new DyQuery<T>() ; //T为具体的类型
+
+public class DyQuery<TLeft> : AbsDyQuery , ICriteria<TLeft>
+
 public interface ICriteria<TLeft>
         : IDyQuery
         , IJoin<TLeft>,IOn<TLeft>
@@ -195,20 +196,21 @@ public interface ICriteria<TLeft>
         , IProc<TLeft>
 ```
 
->Dy类型：执行DyQuery的操作类，真正执行数据库访问操作，一般形式：var result = new Dy().Query(query); //返回DyResult类型
 ```
- public class Dy
+Dy类型：执行DyQuery的操作类，真正执行数据库访问操作，一般形式：var result = new Dy().Query(query); //返回DyResult类型
+
+public class Dy
     {
         public DyResult Query(IDyQuery dyQuery);
         public void BulkInsert<T>(List<T> models, int perCommitRowCount = 102400, bool tableLock = true); //批量插入
     }
 ```
-
->DyResult类型：查询的结果，执行dy操作后，将结果集DataSet保存至DyResult内部，DyResult提供了很多将结果集转成特定结构的函数，一般形式：
+```
+DyResult类型：查询的结果，执行dy操作后，将结果集DataSet保存至DyResult内部，DyResult提供了很多将结果集转成特定结构的函数，一般形式：
         1. result.AsJson();//将结果转为json字符串，byte[]将进行Base64编码
         2. result.TList<T>();//将结果转为对象列表
         3. 更多.....
-```
+        
  public interface IDyResult
     {
         object AsRC(int tableIndex = 0);
@@ -244,15 +246,16 @@ public interface ICriteria<TLeft>
     }
 ```
 >综上，不管怎样，当你需要访问数据库时就3个步骤
->```
+
+```
 >var query = new DyQuery<T>().AsQuery();//定义DyQuery
 >var result = new Dy().Query(query);//执行数据库访问
 >var jsonResult = result.AsJson();//将结果集，转成json字符串
->```
+```
 
 
 
-#####3、弄明白Lambda推导形参（表别名），【很重要】
+##### 3、弄明白Lambda推导形参（表别名），【很重要】
 
 直接上代码说明：
 ```
@@ -273,7 +276,7 @@ public interface ICriteria<TLeft>
                       .Where(t2 => t2.用户名=="Test" )
                       .Select(t2 => t2.账号)
                       .AsQuery(); 
-
+    
       //DyQuery<tb_user>显式指定别名t2,Join<tb_user>表的别名为t3
       //自连接的操作，其中第一个tb_user别名为t2，第二个tb_user别名为t3
       var query = new DyQuery<tb_user>(t2=>t2) 
@@ -299,13 +302,13 @@ public interface ICriteria<TLeft>
                     )
                     .Select(t1 => new { t1.账号, t1.用户名 })
                 .AsQuery();
-                      
+
 ```
 >当指定了表别名后，之后的Join,Where,Group,Select等方法中，表别名都要保持一致
 
 
 
-#####4、IDyQuery接口，定义查询接口
+##### 4、IDyQuery接口，定义查询接口
 
 ```
         /// <summary>
@@ -327,7 +330,7 @@ public interface ICriteria<TLeft>
 
 
 
-#####5、IProc接口，执行存储过程
+##### 5、IProc接口，执行存储过程
 
 > kQL.orm使用存储过程很方便，因为通过kQL.orm.cmdTool工具，将存储过程生成了实体类。
 ```
@@ -340,12 +343,13 @@ public interface ICriteria<TLeft>
         public Decimal 金额 { get; set; } 
     }
 ```
+
 ```
            //调用无参数存储过程
             var query1 = new DyQuery<sp_get_order_all>().Proc(new sp_get_order_all { });
             var result1 = dy.Query(query1);
             Console.WriteLine(result1.AsJson());
-
+    
             //调用有参数存储过程
             var query2 = new DyQuery<sp_add_order>().Proc(new sp_add_order
             {
@@ -361,7 +365,7 @@ public interface ICriteria<TLeft>
 
 
 
-#####6、IInsertInst接口，执行插入操作
+##### 6、IInsertInst接口，执行插入操作
 
 ```
     public interface IInsertInst<TLeft> : IDyQuery
@@ -371,7 +375,7 @@ public interface ICriteria<TLeft>
         IInsertInst<TLeft> Insert<TRight>(TRight inst);
         IInsertInst<TLeft> Insert<TRight>(List<TRight> insts);
     }
-    
+
 ```
 > Insert支持实体对象或实体对象列表的混合插入，混合插入即可以使用不同类型的实体对象进行插入
 > Insert插入永远在同一个事务中，框架内自动加了事务。其他的Orm框架可能要要显示定义Transaction。
@@ -395,6 +399,7 @@ public interface ICriteria<TLeft>
             var result = new Dy().Query(query1);
             //result.RowCount;//影响的行数             
 ```
+
 ```
             //混合不同类型实体对象插入
             var multi_category = new List<tb_categories> {
@@ -441,7 +446,7 @@ public interface ICriteria<TLeft>
                     顺序=1
                 }
             };
-
+    
             var multi_products = new List<int> { 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 }.Select(i =>
             {
                 Thread.Sleep(50);
@@ -472,8 +477,9 @@ public interface ICriteria<TLeft>
             }else{
               //插入失败 
             }
-            
+
 ```
+
 ```
             //大批量数据插入 
             var multi_user_batch = new List<int> { 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 }.Select(i =>
@@ -498,7 +504,7 @@ public interface ICriteria<TLeft>
 
 
 
-#####7、IDelete、IDeleteInst接口，执行删除操作
+##### 7、IDelete、IDeleteInst接口，执行删除操作
 
 ```
     public interface IDelete<TLeft>
@@ -512,7 +518,7 @@ public interface ICriteria<TLeft>
         IDeleteInst<TLeft> Delete<TRight>(TRight inst);
         IDeleteInst<TLeft> Delete<TRight>(List<TRight> insts);
     }
-    
+
 ```
 > 根据实体对象删除，实体必须定义主键，框架会检测实体T类型的[Description]主键标记，根据主键进行删除
 > 根据条件删除，无须实体定义主键
@@ -551,7 +557,7 @@ public interface ICriteria<TLeft>
 
 
 
-#####8、IUpdate、ISet、IUpdateInst接口，执行更新操作
+##### 8、IUpdate、ISet、IUpdateInst接口，执行更新操作
 
 ```
     public interface IUpdate<TLeft>
@@ -609,12 +615,12 @@ public interface ICriteria<TLeft>
                             (t1, t2) => t1.产品ID == t2.产品ID
                          ).Where(t1 => t1.支付价 > 30).AsQuery();
              var rowCount = dy.Query(query).RowCount;  
-            
+
 ```
 
 
 
-#####9、ISelect接口，执行查询操作
+##### 9、ISelect接口，执行查询操作
 
 ```
     public interface ISelect<TLeft>
@@ -631,18 +637,19 @@ public interface ICriteria<TLeft>
         ICriteria<TLeft> Select<TRight1, TRight2, TRight3, TRight4, TRight5, TRight6, TRight7, TRight8>(Expression<Func<TRight1, TRight2, TRight3, TRight4, TRight5, TRight6, TRight7, TRight8, dynamic>> selectExpr);
     }
 ```
-> ```
+
+```
 > Select<tb_user>(t1=>t1) //查询tb_user表的所有字段 => select t1.*
 > Select<tb_user>(t1=>new tb_user{ 用户名 = t1.用户名,账号 = t1.账号}) //查询tb_user表的指定字段 => select t1.用户名,t1.账号
 > Select<tb_user>(t1=>1) //查询=> select 1
 > Select<tb_user>(t1=> new { 总计 = DyExtFn.Dy_CountN(1) ) //查询=> select count(1) as 总计
 > Select<tb_user>(t1=> new { 总计 = t1.账号.Dy_CountN(1) ) //查询=> select count(t1.账号) as 总计
 > Select<tb_order, tb_order_detail>((t1, t2) => new { t1.订单ID, t1.账号, 明细数量 = t2.订单ID.Dy_Count() }) //=> select t1.订单ID, t1.账号,count(t2.订单ID) as 明细数量
-> ```
+```
 
 
 
-#####10、IOrder接口，指定排序
+##### 10、IOrder接口，指定排序
 
 ```
     public interface IOrder<TLeft>
@@ -663,7 +670,7 @@ public interface ICriteria<TLeft>
 
 
 
-#####11、IJoin接口，连接查询
+##### 11、IJoin接口，连接查询
 
 ```
     public interface IJoin<TLeft>
@@ -684,7 +691,7 @@ public interface ICriteria<TLeft>
 
 
 
-#####12、IWhere接口、条件过滤
+##### 12、IWhere接口、条件过滤
 
 ```
     public interface IWhere<TLeft>
@@ -698,13 +705,14 @@ public interface ICriteria<TLeft>
         ICriteria<TLeft> Where<TRight>(WhereWay whereWay, Expression<Func<TRight, bool>> whereExpr);
         ICriteria<TLeft> Where<TRight1, TRight2>(WhereWay whereWay, Expression<Func<TRight1, TRight2, bool>> whereExpr);
         #endregion
-
+    
         #region Exists 子查询
         ICriteria<TLeft> Exists(WhereWay whereWay, IDyQuery existsDyQuery);
         ICriteria<TLeft> ExistsNot(WhereWay whereWay, IDyQuery existsDyQuery);
         #endregion 
     }
 ```
+
 ```
            //条件过滤
         private static string GetUserId() //上下文计算函数
@@ -742,7 +750,7 @@ public interface ICriteria<TLeft>
 
 
 
-#####13、IGroup、IHaving、分组过滤
+##### 13、IGroup、IHaving、分组过滤
 
 ```
     public interface IGroup<TLeft>
@@ -757,6 +765,7 @@ public interface ICriteria<TLeft>
         ICriteria<TLeft> Having<TModel>(WhereWay whereWay, Expression<Func<TModel, bool>> havingExpr);
     }
 ```
+
 ```
            //group,having
            var query = new DyQuery<tb_order>(t2 => t2)
@@ -784,7 +793,7 @@ public interface ICriteria<TLeft>
 
 
 
-#####14、强大的DyResult，继承自IDyResult接口
+##### 14、强大的DyResult，继承自IDyResult接口
 
 ```
     public interface IDyResult
@@ -807,7 +816,7 @@ public interface ICriteria<TLeft>
         Tuple<T0, T1, T2, T3, T4, T5> AsT_OneOne<T0, T1, T2, T3, T4, T5>(int tableIndex = 0) where T0 : new() where T1 : new() where T2 : new() where T3 : new() where T4 : new() where T5 : new();
         Tuple<T0, T1, T2, T3, T4, T5, T6> AsT_OneOne<T0, T1, T2, T3, T4, T5, T6>(int tableIndex = 0) where T0 : new() where T1 : new() where T2 : new() where T3 : new() where T4 : new() where T5 : new() where T6 : new();
         Tuple<T0, T1, T2, T3, T4, T5, T6, T7> AsT_OneOne<T0, T1, T2, T3, T4, T5, T6, T7>(int tableIndex = 0) where T0 : new() where T1 : new() where T2 : new() where T3 : new() where T4 : new() where T5 : new() where T6 : new() where T7 : new();
-
+    
         List<Tuple<T0, T1>> AsTList_OneOne<T0, T1>(int tableIndex = 0) where T0 : new() where T1 : new();
         List<Tuple<T0, T1, T2>> AsTList_OneOne<T0, T1, T2>(int tableIndex = 0) where T0 : new() where T1 : new() where T2 : new();
         List<Tuple<T0, T1, T2, T3>> AsTList_OneOne<T0, T1, T2, T3>(int tableIndex = 0) where T0 : new() where T1 : new() where T2 : new() where T3 : new();
@@ -819,7 +828,7 @@ public interface ICriteria<TLeft>
         //以下是一对多关系的数据处理，oneGroupExpr指定主表的分组字段
         Tuple<One, List<Many>> AsT_OneMany<One, Many>(Expression<Func<One, One>> oneGroupExpr = null, int tableIndex = 0) where One : new() where Many : new();
         List<Tuple<One, List<Many>>> AsTList_OneMany<One, Many>(Expression<Func<One, One>> oneGroupExpr = null, int tableIndex = 0) where One : new() where Many : new();
-
+    
     }
 ```
 >DyResult对象有两个属性，
@@ -843,6 +852,7 @@ PagedList<T>.TotalPages ==>> 总行数
 PagedList<T>.HasPreviousPage ==>> 是否有前一页
 PagedList<T>.HasNextPage ==>> 是否有后一页
 ```
+
 ```
 TreeNode<T> AsTree<T>();
 TreeNode<T>.Parent ==>> 父节点T类型对象
@@ -857,16 +867,16 @@ TreeNode<T>.Children ==>> 子节点TreeNode类型
 
 
 
-####三、进阶篇
+#### 三、进阶篇
 
-#####1、开发过程中调试
+##### 1、开发过程中调试
 >有时我们在开发的过程中查看生成的SQL语句，可以通过如下方式：
 > var query = new DyQuery<T>().AsQuery(); 
 > var SQL = query.ToString();//生成的SQL语句
 
 
 
-#####2、版本控制
+##### 2、版本控制
 
 >版本控制通过两种方式进行控制
 >方法一：设计数据表的时，将字段定义为timestamp类型，实体文件中生成 [Category(TIMESTAMP)] string 类型、将转为base64字符串
@@ -907,13 +917,13 @@ TreeNode<T>.Children ==>> 子节点TreeNode类型
     //**并发环境下，另一个线程已经修改了这条数据
     query = new DyQuery<tb_product>().Update(product).AsQuery();
     var rowCount = dy.Query(query).RowCount;//rowCount == 0 修改失败
-    
-    
+
+
 ```
 
 
 
-#####3、表、视图、存储过程约定规则
+##### 3、表、视图、存储过程约定规则
 ```
  //存储过程
  create proc sp_get_order_all
@@ -926,9 +936,9 @@ TreeNode<T>.Children ==>> 子节点TreeNode类型
 ==>>生成实体
     public class sp_get_order_all
     {
- 
+     
     }
-    
+
 //视图 => 具体操作跟表实体对象一致    
 create view  v_user_order
 as 
@@ -943,14 +953,14 @@ as
         public Int32 购买数量 { get; set; }
         public String 账号 { get; set; } 
     }
-    
+
 ```
 > **约定，下划线_开头的存储过程，或视图，将不会生成实体文件。有时为了维护方便，会在数据库中建立一些日常维护的脚本，不需要给程序调用，这种场景下，可以使用下划线_开头的存储过程或视图
 > 通常表以tb开头、实体以v开头、存储过程以sp开头
 
 
 
-#####4、存储过程允许返回多张表
+##### 4、存储过程允许返回多张表
 
 >IDyResult接口中的大多数方法，都有一个默认形参tableIndex=0，默认取结果集的第一张表。大多数情况都可以得到满足。但有些场景下需要返回多张表，kQL.orm处理的方式，通过存储过程。
 ```
@@ -965,7 +975,7 @@ end
 ==>>生成实体
     public class sp_multi_tb
     {
- 
+     
     }
     
     var query = new DyQuery<sp_multi_tb>().Proc(new sp_multi_tb { }).AsQuery();
@@ -975,18 +985,18 @@ end
             var productList = result4.AsTList<tb_product>(2);//第三张表的数据
             Console.WriteLine("tb_user count:{0},tb_categories count:{1},tb_product count:{2}"
             , userList.Count, categoryList.Count, productList.Count);
-    
+
 ```
 
 
 
-#####5、In子查询，exists子查询
+##### 5、In子查询，exists子查询
 
 ```
             //IN 查询
             var query = new DyQuery<tb_user>().Where(t1 => t1.用户名.Dy_Right(1).Dy_In(new List<string> { "1", "2", "3" }))
                 .Select(t1 => t1.账号).AsQuery(); 
-
+    
             //Exists 子查询   
             var query = new DyQuery<tb_user>()
                      .Exists(WhereWay.And
@@ -1009,7 +1019,7 @@ end
 
 
 
-#####6、Update..From..方式更新数据
+##### 6、Update..From..方式更新数据
 
 >通过ISet接口实现
 ```
@@ -1025,10 +1035,10 @@ end
 
 
 
-#####7、当结果集返回多个同名字段时、 默认填充第一个字段
+##### 7、当结果集返回多个同名字段时、 默认填充第一个字段
 
 > 如果一个存储过程返回多个同名字段
-``` 
+```
 create proc sp_user_selfjoin
 as
 begin 
@@ -1057,7 +1067,7 @@ var user = dy.Query(query).AsDyT<tb_user>();
 
 
 
-#####8、Where条件，bool类型，null类型的处理
+##### 8、Where条件，bool类型，null类型的处理
 
 > **Where条件中bool类型必须使用二元表达式
 ```
@@ -1071,7 +1081,7 @@ var user = dy.Query(query).AsDyT<tb_user>();
 
 
 
-#####9、动态查询示例
+##### 9、动态查询示例
 
 >业务中页面查询条件动态组合，简单演示动态查询
 ```
@@ -1090,7 +1100,7 @@ var result = dy.Query(top1Query);
 
 
 
-#####10、DyResult中的 AsT...方法
+##### 10、DyResult中的 AsT...方法
 
 >以上所有演示，AsT...相关方法都使用的是kQL.orm.cmdTool生成的实体对象
 >**您可以自动定义类型进行映射，不一定使用生成的实体对象
@@ -1118,7 +1128,7 @@ var dtoList = dy.Query(query).AsTList<Order_DTO>();
 
 
 
-#####11、通过truncate命令清空表
+##### 11、通过truncate命令清空表
 
 ```
     public interface ITruncate<TLeft> : IDyQuery
@@ -1132,12 +1142,12 @@ var dtoList = dy.Query(query).AsTList<Order_DTO>();
      dy.Query(new DyQuery<tb_order>().Truncate());
      dy.Query(new DyQuery<tb_order_detail>().Truncate());
      dy.Query(new DyQuery<tb_product>().Truncate());
-    
+
 ```
 
 
 
-#####12、额外的配置项
+##### 12、额外的配置项
 
 >kQL.orm.command.timeout：sql command命令执行超时时间，默认30秒
 >kQL.orm.bulk.timeout：批量插入超时时间，默认0不超时
@@ -1150,10 +1160,11 @@ var dtoList = dy.Query(query).AsTList<Order_DTO>();
 
 
 
-####四、扩展函数速查表
+#### 四、扩展函数速查表
 
 > public static class DyExtFn：所有扩展函数都定义在该类中
-#####字符串函数 
+
+##### 字符串函数 
 | 扩展函数名         | DB函数名      | 说明                        |
 | :------------ | :--------- | :------------------------ |
 | Dy_Ascii      | ascii      |                           |
@@ -1180,7 +1191,7 @@ var dtoList = dy.Query(query).AsTList<Order_DTO>();
 | Dy_Replace    | replace    |                           |
 | Dy_Replicate  | replicate  |                           |
 
-#####日期时间函数 
+##### 日期时间函数 
 | 扩展函数名         | DB函数名      | 说明                           |
 | :------------ | :--------- | :--------------------------- |
 | Dy_DateAdd    | dateadd    |                              |
@@ -1195,7 +1206,7 @@ var dtoList = dy.Query(query).AsTList<Order_DTO>();
 | Dy_TimeFrt    | 无          | 上下文中DateTime对象的扩展方法          |
 
 
-#####数学函数 
+##### 数学函数 
 | 扩展函数名        | DB函数名   | 说明                       |
 | :----------- | :------ | :----------------------- |
 | Dy_M_Abs     | abs     |                          |
@@ -1230,13 +1241,13 @@ var dtoList = dy.Query(query).AsTList<Order_DTO>();
 | Dy_Min    | min   |                           |
 | Dy_Sum    | sum   |                           |
 
-#####转型函数 
+##### 转型函数 
 | 扩展函数名      | DB函数名   | 说明   |
 | :--------- | :------ | :--- |
 | Dy_Convert | convert |      |
 | Dy_Cast    | cast    |      |
 
-#####系统函数
+##### 系统函数
 | 扩展函数名        | DB函数名     | 说明   |
 | :----------- | :-------- | :--- |
 | Dy_NewId     | newid     |      |
@@ -1244,7 +1255,7 @@ var dtoList = dy.Query(query).AsTList<Order_DTO>();
 | Dy_IsNull    | isnull    |      |
 | Dy_IsDate    | isdate    |      |
 
-#####自定义扩展函数 
+##### 自定义扩展函数 
 | 扩展函数名            | DB函数名                          | 说明    |
 | :--------------- | :----------------------------- | :---- |
 | Dy_StartsWith    | like '[参数]%'                   |       |
@@ -1259,7 +1270,3 @@ var dtoList = dy.Query(query).AsTList<Order_DTO>();
 | Dy_StrLE         | [字段名] <= '[参数]'                |       |
 | Dy_In            | in ([参数1],[参数2],[参数3],...)     | 支持子查询 |
 | Dy_InNot         | not in ([参数1],[参数2],[参数3],...) | 支持子查询 |
-
-```
-
-```
