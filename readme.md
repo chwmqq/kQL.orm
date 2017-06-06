@@ -157,7 +157,7 @@ kQL.orm 使用手册（v1.0）
         public String 产品名称 { get; set; }
         public String 分类编号 { get; set; }
         public Single 进价 { get; set; }
-        public Decimal 运费 { get; set; }
+        public Decimal 运费 { get; set; } 
         public Decimal 税率 { get; set; }
         public Decimal 零售价 { get; set; }
         public Double 会员折扣 { get; set; }
