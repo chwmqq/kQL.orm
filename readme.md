@@ -174,7 +174,7 @@ kQL.orm 使用手册（v1.0）
     [Description]标记为主键，如果表有联合主键，则实体类型中将会有多个属性被[Description]特性标签标记。
     [Category]标记描述二级类别，目前仅二种 XML、TIMESTAMP
     数据库XML类型，c#中映射为string类型，当增删改时需要c#类型去映射到数据库类型。
-    数据库TIMESTAMP类型，严格来讲应该映射为byte[8],但为了更方便的进行值比较，框架内做了处理，将返回base64编码字符串。
+    数据库TIMESTAMP类型，严格来讲应该映射为byte[8],但为了更方便的进行值比较，框架内做了处理，将返回16进制字符串。
 
 
 
@@ -207,7 +207,7 @@ public class Dy
 ```
 ```
 DyResult类型：查询的结果，执行dy操作后，将结果集DataSet保存至DyResult内部，DyResult提供了很多将结果集转成特定结构的函数，一般形式：
-        1. result.AsJson();//将结果转为json字符串，byte[]将进行Base64编码
+        1. result.AsJson();//将结果转为json字符串，byte[]将进行Base64编码，除了byte[8]将返回16进制字符串（TIMESTAMP）
         2. result.TList<T>();//将结果转为对象列表
         3. 更多.....
         
@@ -879,7 +879,7 @@ TreeNode<T>.Children ==>> 子节点TreeNode类型
 ##### 2、版本控制
 
 >版本控制通过两种方式进行控制
->方法一：设计数据表的时，将字段定义为timestamp类型，实体文件中生成 [Category(TIMESTAMP)] string 类型、将转为base64字符串
+>方法一：设计数据表的时，将字段定义为timestamp类型，实体文件中生成 [Category(TIMESTAMP)] string 类型、将转为16进制字符串
 >方法二：设计数据表的时，添加v字段，设置为int类型或uniqueidentifier类型；v为其他类型时框架不会截取处理
 >       int类型，可以作为增长的版本控制，从1开始一直往上累加
 >       uniqueidentifier类型，可以作为变化控制，版本不需要累计的时候可以使用
@@ -1231,7 +1231,7 @@ var dtoList = dy.Query(query).AsTList<Order_DTO>();
 | Dy_M_Rand    | rand    | 静态方法，DyExtFn.Dy_M_Rand() |
 | Dy_M_Round   | round   |                          |
 
-#####聚合函数 
+##### 聚合函数 
 | 扩展函数名     | DB函数名 | 说明                        |
 | :-------- | :---- | :------------------------ |
 | Dy_Avg    | avg   |                           |
