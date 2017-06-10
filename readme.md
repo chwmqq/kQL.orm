@@ -5,7 +5,7 @@ kQL.orm 使用手册（v1.0）
 
 简介
 ---
-**kQL.orm**是基于.Net 4.0平台的，针对MS-SQL数据库开发的一套轻量级数据访问层框架。小巧优雅，更重要的是功能强大到让你**脑洞打开**。几乎无需配置，就能快速上手！
+**kQL.orm**是基于.Net 4.0平台的，针对MS-SQL数据库开发的一套轻量级数据访问层框架。小巧优雅，更重要的是功能强大到让你**脑洞大开**。几乎无需配置，就能快速上手！
 
 #### kQL.orm须知
     1. kQL.orm支持的数据库只有一种SQL Server(2005+)，暂没有计划对其他数据库做扩展支持。
@@ -21,19 +21,25 @@ kQL.orm 使用手册（v1.0）
     3. ......
     4. 2015年6月发布了（k.dbtool.engine v1.0.0.5），基于Expression。
     5. ......
-    6. 2017年6月(k.dbtool.engine v1.0.0.9)正式更名为：kQL.orm v1.0，并面向市场开放。
+    6. 2017年6月6日(k.dbtool.engine v1.0.0.9)正式更名为：kQL.orm v1.0，并面向市场开放。
+       正式版version: v1.0.0.0
+       试用版version: v1.0.0.1   
+    7. 2017年6月9日，添加CopyToRemote功能，重新支持数据库自增列（纠结，本人比较倾向于设计表的时候不用自增列），
+       正式版version: v1.0.0.2
+       试用版version: v1.0.0.3
 
 
 #### kQL.orm概述
-    1. kQL.orm产品采用(db first)数据库优先模式进行处理，即您需要先建好数据库。
-    2. 配套模型层生成工具（kQL.orm.cmdTool.exe）。通过该工具可以自动生成实体层（或者叫Entity层或Model层或...），即：表>>实体，视图>>实体，存储过程>> 实体。当数据库表结构修改后，只需重新执行一遍该工具，就自动同步了映射的实体。使用方便，可以使开发者更加专注于数据库本身的设计，更加集中精力关注于多个实体模型之间的逻辑处理。
-    3. 简化数据访问操作，提升开发效率。支持存储过程、视图、表的操作，支持复杂的嵌套查询（多表join、In子查询、Exists子查询），支持大批量数据插入（bulk insert），支持复杂的更新操作（update..from..）。
-    4. 使项目结构和代码更加精炼，减少30%+的数据访问层代码量。
-    5. 支持实例对象的混合操作（即A类型实例a，B类型实例b，...，可以在同一批次中提交增、删、改），支持实例类型条件的操作（如：更新表无需定义主键，只根据条件）
-    6. 自动版本控制（基于数据库TIMESTAMP类型）或（框架内定义的v字段，支持两种类型int,guid。int用于自增长的版本、guid用于无需自增的版本控制）
-    7. 对数据库内置函数做了扩展，几乎支持所有的数据库内置函数，包括：字符串函数, 时间日期函数, 数学函数, 转型函数, 聚合函数, 系统函数, 扩展函数
-    8. 支持上下文环境中调用方法、属性等动态计算的变量。（如：Where(user=>user.name == GetUserName() )，其中GetUserName()是上下文中的方法。
-    9. 实例对象的增、删、改，内置事务处理。对于所有的查询，使用的事务隔离级别READ UNCOMMITTED.
+1. kQL.orm产品采用**(db first)**数据库优先模式进行处理，即您需要先建好数据库。
+2. 配套模型层生成工具（kQL.orm.cmdTool.exe）。通过该工具可以自动生成实体层（或者叫Entity层或Model层或...），即：表>>实体，视图>>实体，存储过程>> 实体。当数据库表结构修改后，只需重新执行一遍该工具，就自动同步了映射的实体。使用方便，可以使开发者更加专注于数据库本身的设计，更加集中精力关注于多个实体模型之间的逻辑处理。
+3. **简化数据访问操作，提升开发效率。支持扩展函数的嵌套调用，支持存储过程、视图、表的操作，支持复杂的嵌套查询（多表join、In子查询、Exists子查询），支持大批量数据插入（bulk insert），支持复杂的更新操作（update..from..）。**
+4. 使项目结构和代码更加精炼，减少30%+的数据访问层代码量。
+5. 支持实例对象的混合操作（即A类型实例a，B类型实例b，...，可以在同一批次中提交增、删、改），支持实例类型条件的操作（如：更新表无需定义主键，只根据条件）
+6. **自动版本控制**（基于数据库TIMESTAMP类型）或（框架内定义的v字段，支持两种类型int,guid。int用于自增长的版本、guid用于无需自增的版本控制）
+7. **对数据库内置函数做了扩展，扩展函数可多层嵌套调用，字段支持四则运算**，几乎支持所有的数据库内置函数，包括：字符串函数, 时间日期函数, 数学函数, 转型函数, 聚合函数, 系统函数, 扩展函数
+8. **支持上下文环境中调用方法、属性等动态计算的变量。**（如：Where(user=>user.name == GetUserName() )，其中GetUserName()是上下文中的方法。
+9. 实例对象的增、删、改，内置事务处理。对于所有的查询，使用的事务隔离级别READ UNCOMMITTED.
+10. **支持不同SQL Server数据库之间的数据同步，通过CopyToRemote方法实现数据库之间的同步。**强大之处在于通过定义DyQuery表达式，就可以实现大数据量的复制。很多应用场景下很有用。
 
 #### kQL.orm下载
 [kQL.orm v1.0 下载](http://pan.baidu.com/s/1pKF5gmR) 
@@ -41,24 +47,138 @@ kQL.orm 使用手册（v1.0）
 #### kQL.orm价格
 > 支付宝账号：chwmqq@126.com 
 
-  实例并发数   |   价格   |    适用对象    | license有效期 
- ------ | ---- | -------- | -------- 
-  无限制并发   | ￥9,999 | 互联网或大型应用项目 |     永久     
- 500个实例并发 | ￥6,999 |   大型应用项目   |     永久     
- 100个实例并发 | ￥5,999 |  中大型应用项目   |     永久     
- 50个实例并发  | ￥2,999 |  适合中小型项目   |     永久     
-  5个实例并发  |  ￥299  |   适合个人项目   |     永久     
-  1个实例并发  |   免费   |  适合开发测试项目  |   下载体验版    
+|  实例并发数   |   价格   |    适用对象    | license有效期 |
+| :------: | :----: | :--------: | :--------: |
+|  无限制并发   | ￥9,999 | 互联网或大型应用项目 |     永久     |
+| 500个实例并发 | ￥6,999 |   大型应用项目   |     永久     |
+| 100个实例并发 | ￥5,999 |  中大型应用项目   |     永久     |
+| 50个实例并发  | ￥2,999 |  适合中小型项目   |     永久     |
+|  5个实例并发  |  ￥299  |   适合个人项目   |     永久     |
+|  1个实例并发  |   免费   |  适合开发测试项目  |   下载体验版    |
 >**一个license文件只能用于一台机器
 
 
 
 目录
 ---
+####零、典型案例
+
+批插、和数据同步时注意需要设置超时时间，因为默认只有30秒。
+
+1. 批量插入
+```
+           //本地库数据初始化 插入10万条用户数据 
+           var localDy = new Dy();//本地库执行者 
+            int insertCount = 100000;//插入数据的数量
+            Console.WriteLine("开始测试_导数据,本地库插入{0}条用户数据", insertCount);
+            Console.WriteLine("开始生成数据");
+            List<tb_user> userlist = new List<tb_user>();
+            for (int i = 200; i < insertCount + 200; i++)
+            {
+                userlist.Add(
+                new tb_user
+                {
+                    自增NO = i, //自增列 框架不会去插入
+                    账号 = string.Format("U{0:D4}", i),
+                    密码 = "12345678",
+                    用户名 = string.Format("Tester{0:D3}", i),
+                    性别 = i % 2 == 0,
+                    年龄 = RNG.Next(20, 60),
+                    会员等级 = (byte)(RNG.Next(1, 255)),
+                    积分 = RNG.Next(1000, 10000),
+                    消费能力 = Math.Abs((short)RNG.Next(1, 100)),
+                    头像 = 获取头像(i),
+                    注册日期 = DateTime.Now
+                });
+            }
+            Console.WriteLine("完成生成数据，开始执行插入本地库");
+            long ms = localDy.BulkInsert(userlist); //本地库插入10万条数据
+            Console.WriteLine("插入本地库{1}条数据执行:{0}毫秒", ms, insertCount);
+            Console.WriteLine(); 
+```
+2. **数据同步**、字段的四则运算
+```
+           //场景一：本地库与远程库 表结构一致>>单表->同步到远程服务器
+           //kQL.orm.demo命名空间下为本地库的实体类
+           //kQL.orm.remotemodels命名空间下为远程库的实体类
+           var localDy = new Dy();//本地库执行者
+           var remoteDy = new Dy("remoteServer");//远程库执行者
+            Console.WriteLine("开始执行导入远程服务器"); 
+            var query1 = new DyQuery<kQL.orm.demo.tb_user>().AsQuery();
+            var result = localDy
+            .CopyToRemote<kQL.orm.demo.remotemodels.tb_user>(query1, remoteDy);
+            Console.WriteLine("完成导入远程服务器，本次执行毫秒:{0}", result.Item1);
+            Console.WriteLine();
+            
+           //场景二：本地库与远程库 表结构不一致>>多表的组合->同步到远程服务器
+           //****灵活定义、快速同步
+            var query2 = new DyQuery<tb_order>(t2 => t2)
+       .Join<tb_order_detail>(JoinWay.InnerJoin, t3 => t3)
+       .On<tb_order, tb_order_detail>((t2, t3) => t2.订单ID == t3.订单ID) 
+       .Group(t2 => t2.订单ID).Group(t2 => t2.账号)
+       .Having<tb_order_detail>(WhereWay.And, 
+                                   t3 => t3.订单ID.Dy_Count() > 5
+                        ).Select<tb_order, tb_order_detail>(
+                            (t2, t3) => new
+                            {
+                                t2.订单ID,
+                                t2.账号,
+                                明细数量 = t3.订单ID.Dy_Count(),
+                                总金额Max = t3.支付价.Dy_Max(),
+                                总金额Min = t3.支付价.Dy_Min(),
+                                总金额Sum = t3.支付价.Dy_Sum(),
+                                总金额Avg = t3.支付价.Dy_Avg(),
+                                R金额 = ((t3.支付价.Dy_Max() + t3.支付价.Dy_Min() - t3.支付价.Dy_Sum() * t3.支付价.Dy_Avg()) / t3.支付价.Dy_Min()).Dy_Convert<decimal, decimal>("decimal(18,2)") //四则运算及转型
+                            }
+                            ).AsQuery();
+            var result = localDy.CopyToRemote<kQL.orm.demo.remotemodels.tb_order_info>(query2, remoteDy);
+            Console.WriteLine("本地多表的组合->同步到远程服务器->本次执行毫秒:{0}", result.Item1);
+```
+3. Exists子查询
+```
+           //Exists 子查询   
+            var query5 = new DyQuery<tb_user>()
+                     .Exists(WhereWay.And
+                        , new DyQuery<tb_order>(t2 => t2)
+                        .Join<tb_order_detail>(JoinWay.InnerJoin, t3 => t3)
+                        .On<tb_order, tb_order_detail>((t2, t3) => t2.订单ID == t3.订单ID)
+                        //与下面等价
+                        //.Join<tb_order_detail>(JoinWay.InnerJoin, (t2, t3) => t2.订单ID == t3.订单ID)
+                        .Group(t2 => t2.订单ID).Group(t2 => t2.账号)
+                        .Having<tb_order_detail>(WhereWay.And, t3 => t3.订单ID.Dy_Count() > 5)
+                        //.Select<tb_order, tb_order_detail>((t2, t3) => new { t2.订单ID, t2.账号, 明细数量 = t3.订单ID.Dy_Count() })
+                        .Where<tb_order, tb_user>((t2, t1) => t2.账号 == t1.账号)
+                        .Select(t2 => 1).AsQuery()
+                    )
+                    .Select(t1 => new { t1.账号, t1.用户名 })
+                .AsQuery();
+            Console.WriteLine(localDy.Done(query5).AsJson());
+```
+4. 嵌套In子查询，扩展函数的嵌套调用
+```
+            //IN 查询
+            var query4 = new DyQuery<tb_user>()
+                .Where(t1 => t1.用户名.Dy_Substring(1, 6).Dy_Right(1).Dy_In(new List<string> { "1", "2", "3" }))
+                .Where(t1 => t1.账号.Dy_In(new DyQuery<tb_order>(t2 => t2).Select(t2 => t2.账号)))
+                .Select(t1 => t1.账号).AsQuery();
+            Console.WriteLine(localDy.Done(query4).AsJson());
+```
+5. 组合的Where条件
+``` 
+            var query8 = new DyQuery<tb_user>()
+                .Where(t1 => 
+                	(t1.用户名.Dy_EndsWith("1") || t1.账号.Dy_Right(1) == "2") 
+                	&& 
+                	(t1.用户名.Dy_Contains("3") || t1.账号.Dy_Contains("3"))
+                ).Select(t1 => t1.账号).AsQuery();
+```
+
+
 
 #### 一、快速入门
-1. 创建数据库 db-demo,并创建tb_user、tb_categories、tb_product、tb_order表,建表脚本在demo演示程序中
-2. 新建项目demo（如：路径：D:\demo），这里使用控制台程序，引用【kQL.orm.dll】，添加app.config配置文件，配置连接字符串
+
+1. 创建数据库 db-demo,执行演示程序中的建表脚本db-demo.sql、其中db-demo-remote.sql用于模拟本地到远程库的数据同步
+2. 打开演示项目，这里使用控制台程序，其中依赖组件【kQL.orm.dll】，app.config配置文件，配置连接字符串
 ```
 <appSettings> 
     <add key="kQL.orm.connstr" value="server=local;database=db_demo;uid=sa;pwd=sa;"/> 
@@ -79,7 +199,7 @@ kQL.orm 使用手册（v1.0）
 4. 在demo项目Program.cs > Main函数中，导入命名空间 kQL.orm.expr、kQL.orm
     使用kQL进行数据访问，分为两个步骤：
     定义查询，即 var dyQuery = new kQL.orm.expr.DyQuery<T>().AsQuery();
-    执行查询，即 var result = new kQL.orm.Dy().Query(dyQuery);
+    执行查询，即 var result = new kQL.orm.Dy().Done(dyQuery);
 5. 增加演示
 ```
             //单条插入、添加一个用户
@@ -97,14 +217,14 @@ kQL.orm 使用手册（v1.0）
                 注册日期 = DateTime.Now
             };
             var query1 = new DyQuery<tb_user>().Insert(user1).AsQuery();
-            var result = new Dy().Query(query1);
+            var result = new Dy().Done(query1);
             Console.WriteLine(result.AsJson());
 ```
 6. 查询演示
 ```
             //根据账号查找用户
             var query1 = new DyQuery<tb_user>().Where(t1 => t1.账号 == "U0001").AsQuery();
-            var result1 = new Dy().Query(query1);
+            var result1 = new Dy().Done(query1);
             Console.WriteLine(result1.AsJson());
 ```
 7. 修改演示
@@ -112,18 +232,18 @@ kQL.orm 使用手册（v1.0）
             /*方法一：通过实体修改*/
             //根据账号查找用户
             var query1 = new DyQuery<tb_user>().Where(t1 => t1.账号 == "U0001").AsQuery();
-            var result1 = new Dy().Query(query1);
+            var result1 = new Dy().Done(query1);
             Console.WriteLine(result1.AsJson());
             var user = result1.AsT<tb_user>();
             //修改用户密码
             user.密码 = "00000000";
             query1 = new DyQuery<tb_user>().Update(user).AsQuery();
-            result1 = new Dy().Query(query1);
+            result1 = new Dy().Done(query1);
             Console.WriteLine(result1.AsJson());
 
             /*方法二：通过条件修改*/
             query1 = new DyQuery<tb_user>().Update(t1=>t1.密码 == "00000000").Where(t1 => t1.账号 == "U0001").AsQuery();
-            result1 = new Dy().Query(query1);
+            result1 = new Dy().Done(query1);
             Console.WriteLine(result1.AsJson());
 ```
 8. 删除演示
@@ -131,16 +251,16 @@ kQL.orm 使用手册（v1.0）
             /*方法一：通过实体删除*/
             //根据账号查找用户
             var query1 = new DyQuery<tb_user>().Where(t1 => t1.账号 == "U0001").AsQuery();
-            var result1 = new Dy().Query(query1);
+            var result1 = new Dy().Done(query1);
             Console.WriteLine(result1.AsJson());
             var user = result1.AsT<tb_user>(); 
             query1 = new DyQuery<tb_user>().Delete(user).AsQuery();
-            result1 = new Dy().Query(query1);
+            result1 = new Dy().Done(query1);
             Console.WriteLine(result1.AsJson());
 
             /*方法二：通过条件删除*/
             query1 = new DyQuery<tb_user>().Delete().Where(t1 => t1.账号 == "U0001").AsQuery();
-            result1 = new Dy().Query(query1);
+            result1 = new Dy().Done(query1);
             Console.WriteLine(result1.AsJson());
 ```
 
@@ -173,9 +293,10 @@ kQL.orm 使用手册（v1.0）
     }
 ```
     1. [Description]标记为主键，如果表有联合主键，则实体类型中将会有多个属性被[Description]特性标签标记。
-    2. [Category]标记描述二级类别，目前仅二种 XML、TIMESTAMP
+    2. [Category]标记描述二级类别，目前仅三种 XML、TIMESTAMP、IDENTITY
     3. 数据库XML类型，c#中映射为string类型，当增删改时需要c#类型去映射到数据库类型。
     4. 数据库TIMESTAMP类型，严格来讲应该映射为byte[8],但为了更方便的进行值比较，框架内做了处理，将返回16进制字符串。
+    5. IDENTITY自增列
 
 
 
@@ -198,12 +319,16 @@ public interface ICriteria<TLeft>
 ```
 
 ```
-Dy类型：执行DyQuery的操作类，真正执行数据库访问操作，一般形式：var result = new Dy().Query(query); //返回DyResult类型
+Dy类型：执行DyQuery的操作类，真正执行数据库访问操作，一般形式：var result = new Dy().Done(query); //返回DyResult类型
 
 public class Dy
     {
         public DyResult Query(IDyQuery dyQuery);
         public void BulkInsert<T>(List<T> models, int perCommitRowCount = 102400, bool tableLock = true); //批量插入
+         /// <summary>
+        /// 返回 Item1:执行毫秒数,Item2:执行的消息
+        /// </summary> 
+        public Tuple<long,string> CopyToRemote<T>(IDyQuery sourceDyQuery, Dy destinationDy) where T : class;
     }
 ```
 ```
@@ -250,7 +375,7 @@ DyResult类型：查询的结果，执行dy操作后，将结果集DataSet保存
 
 ```
 1. var query = new DyQuery<T>().AsQuery();//定义DyQuery
-2. var result = new Dy().Query(query);//执行数据库访问
+2. var result = new Dy().Done(query);//执行数据库访问
 3. var jsonResult = result.AsJson();//将结果集，转成json字符串
 ```
 
@@ -397,7 +522,7 @@ DyResult类型：查询的结果，执行dy操作后，将结果集DataSet保存
                 注册日期 = DateTime.Now
             };
             var query1 = new DyQuery<tb_user>().Insert(user1).AsQuery();
-            var result = new Dy().Query(query1);
+            var result = new Dy().Done(query1);
             //result.RowCount;//影响的行数             
 ```
 
@@ -864,7 +989,7 @@ TreeNode<T>.IsLeaf ==>> 是否叶子节点
 TreeNode<T>.ParentNode ==>> 父节点TreeNode类型
 TreeNode<T>.Children ==>> 子节点TreeNode类型
 ```
->具体看demo程序中SampleCode
+>具体看demo程序中SampleCode->测试_结果集
 
 
 
@@ -1156,6 +1281,9 @@ var dtoList = dy.Query(query).AsTList<Order_DTO>();
 <appSettings> 
     <add key="kQL.orm.command.timeout" value="30"/>
     <add key="kQL.orm.bulk.timeout" value="0"/> 
+    <add key="kQL.orm.connstr" value="server=local;database=db_demo;uid=sa;pwd=sa;"/>
+    <--key可以使用你喜欢的名字 new Dy("remoteServer")-->
+    <add key="remoteServer" value="server=local;database=db_demo_remote;uid=sa;pwd=sa;"/>
 </appSettings>
 ```
 
