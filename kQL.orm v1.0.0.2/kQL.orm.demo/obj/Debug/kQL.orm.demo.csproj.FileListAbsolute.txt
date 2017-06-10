@@ -1,0 +1,13 @@
+D:\MyProduct\k.dbtool\kQL.orm.release\kQL.orm v1.0\kQL.orm.demo\bin\Debug\kQL.orm.demo.exe.config
+D:\MyProduct\k.dbtool\kQL.orm.release\kQL.orm v1.0\kQL.orm.demo\bin\Debug\images\1.jpg
+D:\MyProduct\k.dbtool\kQL.orm.release\kQL.orm v1.0\kQL.orm.demo\bin\Debug\images\2.jpg
+D:\MyProduct\k.dbtool\kQL.orm.release\kQL.orm v1.0\kQL.orm.demo\bin\Debug\images\3.jpg
+D:\MyProduct\k.dbtool\kQL.orm.release\kQL.orm v1.0\kQL.orm.demo\bin\Debug\images\4.jpg
+D:\MyProduct\k.dbtool\kQL.orm.release\kQL.orm v1.0\kQL.orm.demo\bin\Debug\images\5.jpg
+D:\MyProduct\k.dbtool\kQL.orm.release\kQL.orm v1.0\kQL.orm.demo\bin\Debug\kQL.orm.demo.exe
+D:\MyProduct\k.dbtool\kQL.orm.release\kQL.orm v1.0\kQL.orm.demo\bin\Debug\kQL.orm.demo.pdb
+D:\MyProduct\k.dbtool\kQL.orm.release\kQL.orm v1.0\kQL.orm.demo\bin\Debug\kQL.orm.dll
+D:\MyProduct\k.dbtool\kQL.orm.release\kQL.orm v1.0\kQL.orm.demo\bin\Debug\Newtonsoft.Json.dll
+D:\MyProduct\k.dbtool\kQL.orm.release\kQL.orm v1.0\kQL.orm.demo\obj\Debug\kQL.orm.demo.exe
+D:\MyProduct\k.dbtool\kQL.orm.release\kQL.orm v1.0\kQL.orm.demo\obj\Debug\kQL.orm.demo.pdb
+D:\MyProduct\k.dbtool\kQL.orm\kQL.orm.demo\bin\Debug\kQL.orm.demo.exe.config
