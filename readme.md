@@ -1,11 +1,11 @@
 [TOC]
 
-kQL.orm 使用手册（v1.0）
+kQL.orm 使用手册（v1.0.0.4）
 ===
 
 简介
 ---
-**kQL.orm**是基于.Net 4.0平台的，针对MS-SQL数据库开发的一套轻量级数据访问层框架。小巧优雅，更重要的是功能强大到让你**脑洞大开**。几乎无需配置，就能快速上手！
+**kQL.orm**是基于.Net 4.0平台的，针对MS-SQL数据库开发的一套轻量级数据访问层框架。小巧优雅，更重要的是功能强大到让你**脑洞大开**。几乎无需配置，就能快速上手（当然你需要了解lambda表达式相关知识）！支持**数据批插、数据同步、表、视图、存储过程、用户自定义函数及中间表** 的操作。
 
 #### kQL.orm须知
     1. kQL.orm支持的数据库只有一种SQL Server(2005+)，暂没有计划对其他数据库做扩展支持。
@@ -16,30 +16,49 @@ kQL.orm 使用手册（v1.0）
 
 **变迁里程：**
 
-    1. kQL.orm原名(k.dbtool.engine数据访问中间件)
-    2. 2013年6月发布了（k.dbtool.engine v1.0.0.0），基于存储过程的配置调用及代码生成。
-    3. ......
-    4. 2015年6月发布了（k.dbtool.engine v1.0.0.5），基于Expression。
-    5. ......
-    6. 2017年6月6日(k.dbtool.engine v1.0.0.9)正式更名为：kQL.orm v1.0，并面向市场开放。
-       正式版version: v1.0.0.0
-       试用版version: v1.0.0.1   
-    7. 2017年6月9日，添加CopyToRemote功能，重新支持数据库自增列（纠结，本人比较倾向于设计表的时候不用自增列），
+    kQL.orm原名(k.dbtool.engine数据访问中间件)
+    2017年6月9日，支持用户自定义函数（标量函数，表值函数），支持中间表（绝对高大上）
+       正式版version: v1.0.0.4
+       试用版version: v1.0.0.5
+    2017年6月9日，添加CopyToRemote功能，重新支持数据库自增列（纠结，本人比较倾向于设计表的时候不用自增列），
        正式版version: v1.0.0.2
        试用版version: v1.0.0.3
-
+    2017年6月6日(k.dbtool.engine v1.0.0.9)正式更名为：kQL.orm v1.0，并面向市场开放。
+       正式版version: v1.0.0.0
+       试用版version: v1.0.0.1
+    ......
+    2015年6月发布了（k.dbtool.engine v1.0.0.5），基于Expression。
+    ......
+    2013年6月发布了（k.dbtool.engine v1.0.0.0），基于存储过程的配置调用及代码生成。
 
 #### kQL.orm概述
 1. kQL.orm产品采用 **(db first)** 数据库优先模式进行处理，即您需要先建好数据库。
+
 2. 配套模型层生成工具（kQL.orm.cmdTool.exe）。通过该工具可以自动生成实体层（或者叫Entity层或Model层或...），即：表>>实体，视图>>实体，存储过程>> 实体。当数据库表结构修改后，只需重新执行一遍该工具，就自动同步了映射的实体。使用方便，可以使开发者更加专注于数据库本身的设计，更加集中精力关注于多个实体模型之间的逻辑处理。
+
 3. **简化数据访问操作，提升开发效率。支持扩展函数的嵌套调用，支持存储过程、视图、表的操作，支持复杂的嵌套查询（多表join、In子查询、Exists子查询），支持大批量数据插入（bulk insert），支持复杂的更新操作（update..from..）。**
+
 4. 使项目结构和代码更加精炼，减少30%+的数据访问层代码量。
-5. 支持实例对象的混合操作（即A类型实例a，B类型实例b，...，可以在同一批次中提交增、删、改），支持实例类型条件的操作（如：更新表无需定义主键，只根据条件）
+
+5. 支持实例对象的混合操作（即A类型实例a，B类型实例b，...，可以在同一批次中提交增、删、改），支持实例类型条件的操作
+
+   （如：**更新、删除表无需定义主键** ，只根据条件）
+
 6. **自动版本控制**（基于数据库TIMESTAMP类型）或（框架内定义的v字段，支持两种类型int,guid。int用于自增长的版本、guid用于无需自增的版本控制）
+
 7. **对数据库内置函数做了扩展，扩展函数可多层嵌套调用，字段支持四则运算**，几乎支持所有的数据库内置函数，包括：字符串函数, 时间日期函数, 数学函数, 转型函数, 聚合函数, 系统函数, 扩展函数
+
 8. **支持上下文环境中调用方法、属性等动态计算的变量。**（如：Where(user=>user.name == GetUserName() )，其中GetUserName()是上下文中的方法。
+
 9. 实例对象的增、删、改，内置事务处理。对于所有的查询，使用的事务隔离级别READ UNCOMMITTED.
-10. **支持不同SQL Server数据库之间的数据同步，通过CopyToRemote方法实现数据库之间的同步。** 强大之处在于通过定义DyQuery表达式，就可以实现大数据量的复制。很多应用场景下很有用。
+
+10. **支持不同SQL Server数据库之间的数据同步，通过框架内CopyToRemote方法实现数据库之间的同步。** 强大之处在于通过定义DyQuery表达式，就可以实现大数据量的复制。非常灵活，很多应用场景下很有用。
+
+11. **支持标量函数、表值函数** ，如果数据库中含有用户自定义函数（UDF），模型生成工具，会将自定义函数（UDF）生一个Dy_UDF.cs文件，标量函数和表值函数会生成相应的函数在该文件中。（表值函数还会生成一个FModel_开头的模型类）
+
+12. **支持中间表**，框架中定义了DyXTable类型作为中间表处理的类型，可以适应更加复杂的场景。当[主表]的某个[字段]需要[子表聚合查询]结果去更新时比较有用。如：当需要通过[订单明细表]的总数量、合计总价=>更新[订单表]的数量、总价 时，可以通过DyXTable中间表的方式去处理。
+
+    **生成单条SQL语句一次连接** 数据库就完成操作了。
 
 #### kQL.orm下载
 [kQL.orm v1.0 下载](http://pan.baidu.com/s/1pKF5gmR) 
@@ -87,7 +106,7 @@ kQL.orm 使用手册（v1.0）
                     会员等级 = (byte)(RNG.Next(1, 255)),
                     积分 = RNG.Next(1000, 10000),
                     消费能力 = Math.Abs((short)RNG.Next(1, 100)),
-                    头像 = 获取头像(i),
+                    头像 = 获取头像(i),//byte[]数据,照片大小8k左右每张
                     注册日期 = DateTime.Now
                 });
             }
@@ -172,7 +191,24 @@ kQL.orm 使用手册（v1.0）
                 	(t1.用户名.Dy_Contains("3") || t1.账号.Dy_Contains("3"))
                 ).Select(t1 => t1.账号).AsQuery();
 ```
+6. 中间表DyXTable
+```
+            //根据中间表更新>>>>>>更新订单总金额
+            //定义中间表
+            var xTable1 = new DyQuery<tb_order_detail>(t2 => t2)
+                              .Group(t2 => t2.订单ID)
+                              .Select(t2 => new { t2.订单ID, 总金额 = t2.支付价.Dy_Sum(), })
+                       .AsXTable();
 
+            //update from 方式更新 需要JOIN表
+            var query1 = new DyQuery<tb_order>().Update()
+                .Set<DyXTable>((t1, xt1) => t1.总金额 == xt1.Dy_X_Column<decimal>("总金额")) //总金额，中间表的字段
+                .Join<DyXTable>( JoinWay.InnerJoin, (t1, xt1) => t1.订单ID == xt1.Dy_X_Column<tb_order, Guid>(m => m.订单ID)) 
+                .MapXTable<DyXTable>(xt1 => xt1, xTable1) //**映射别名与中间表**
+                .AsQuery();
+
+            Console.WriteLine(new Dy().Done(query1).AsJson());
+```
 
 
 #### 一、快速入门
@@ -300,7 +336,7 @@ kQL.orm 使用手册（v1.0）
 
 
 
-##### 2、必须知道的三大类型（DyQuery<T>、Dy、DyResult）
+##### 2、必须知道的四大类型（DyQuery<T>、Dy、DyResult、DyXTable）
 
 ```
 DyQuery<T>类型：定义各种查询的入口，一般形式：var query = new DyQuery<T>() ; //T为具体的类型
@@ -316,14 +352,16 @@ public interface ICriteria<TLeft>
         , IUpdate<TLeft>, IUpdateInst<TLeft>,ISet<TLeft>
         , ITruncate<TLeft>
         , IProc<TLeft>
+        , IMapXTable<TLeft>
 ```
 
 ```
 Dy类型：执行DyQuery的操作类，真正执行数据库访问操作，一般形式：var result = new Dy().Done(query); //返回DyResult类型
+**不管DyQuery怎样定义，都不会去执行数据库的操作。只有Dy调用相关方法的时候才会真正去执行数据库操作！！**
 
 public class Dy
     {
-        public DyResult Query(IDyQuery dyQuery);
+        public DyResult Done(IDyQuery dyQuery);
         public void BulkInsert<T>(List<T> models, int perCommitRowCount = 102400, bool tableLock = true); //批量插入
          /// <summary>
         /// 返回 Item1:执行毫秒数,Item2:执行的消息
@@ -371,6 +409,190 @@ DyResult类型：查询的结果，执行dy操作后，将结果集DataSet保存
        
     }
 ```
+```
+**DyXTable** 即中间表，有时候对数据库进行操作的时候，我们需要一个零时的中间表。通过DyXTable可以实现更复杂的操作，如：表值函数的使用，更复杂的更新（[订单表].总金额 = sum([明细表].金额)），详见进阶篇
+```
+```
+            /*以下方法都是对已经查询后的结果集，做进一步处理*/
+            //RowCount 返回影响的行数，只对 增、删、改 有效，查询返回结果永远是0
+            List<int> idlist = new List<int>();
+            for (int i = 0; i < 100; i++)
+            {
+                idlist.Add(i + 50);
+            }
+            var multi_user_batch = idlist.Select(i =>
+            {
+                Thread.Sleep(50);
+                return new tb_user
+                {
+                    账号 = string.Format("U{0:D4}", i),
+                    密码 = "12345678",
+                    用户名 = string.Format("Tester{0:D3}", i),
+                    性别 = i % 2 == 0,
+                    年龄 = new Random().Next(20, 60),
+                    会员等级 = (byte)(new Random().Next(1, 255)),
+                    积分 = new Random().Next(1000, 10000),
+                    消费能力 = Math.Abs((short)new Random().Next(1, 100)),
+                    头像 = 获取头像(i),
+                    注册日期 = DateTime.Now,
+                };
+            }).ToList();
+            //var q0 = new DyQuery<tb_user>().Insert(multi_user_batch).AsQuery();
+            //var result0 = dy.Query(q0);
+            //Console.WriteLine("影响的行数：" + result0.RowCount);
+
+
+            //Records返回结果集
+            var q1 = new DyQuery<tb_user>().Where(t1 => t1.用户名.Dy_Contains("00")).Select(t1 => new { t1.账号, t1.用户名, t1.消费能力 }).AsQuery();
+            var result = localDy.Done(q1);
+            Console.WriteLine("影响的行数：" + result.RowCount);//返回0
+            Console.WriteLine("结果集中表的数量：" + result.Records.Tables.Count);
+             
+
+            //AsT -> 如果查询有多条记录，返回记录的第一条
+            var query1 = new DyQuery<tb_user>().Where(t1 => t1.用户名.Dy_Contains("00")).Select(t1 => new { t1.账号, t1.用户名, t1.消费能力 }).AsQuery(); 
+            var user1 = localDy.Done(query1).AsDyT(); 
+            Console.WriteLine("账号:{0},用户名:{1}", user1.账号,user1.用户名);
+
+            //AsTList ->返回记录列表
+            var query2 = new DyQuery<tb_user>().Where(t1 => t1.用户名.Dy_Contains("00")).Select(t1 => new { t1.账号, t1.用户名, t1.消费能力 }).AsQuery();
+            var user2list = localDy.Done(query2).AsDyTList();
+            foreach (var user2 in user2list)
+            {
+                Console.WriteLine("账号:{0},用户名:{1}", user2.账号, user2.用户名); 
+            }
+             
+
+            //AsRC ->返回首行首列
+            var query3 = new DyQuery<tb_user>().Where(t1 => t1.用户名.Dy_Contains("00")).Select(t1 => new { t1.账号, t1.用户名, t1.消费能力 }).AsQuery();
+            var 首行首列= localDy.Done(query3).AsRC();
+            Console.WriteLine(首行首列);
+
+            //AsJson ->将Records结果集，直接转成标准json字符串格式  ajax请求的时候返回json格式很方便
+            var query4 = new DyQuery<tb_user>().Where(t1 => t1.用户名.Dy_Contains("00")).Select(t1 => new { t1.账号, t1.用户名, t1.消费能力 }).AsQuery();
+            Console.WriteLine(localDy.Done(query4).AsJson());
+
+            //AsTPageList 
+            int pIndex = 1;
+            int pSize = 5;
+            var criteria = new DyQuery<tb_user>()
+                            .Order(OrderWay.Asc, t1 => t1.账号)
+                            .Select(t1 => new { t1.账号, t1.用户名, t1.消费能力 });
+
+            var query5 = criteria.AsQueryPaged(pIndex, pSize);
+            var plist1 = localDy.Done(query5).AsTPageList<tb_user>();
+            Console.WriteLine("当前页:{0},每页大小:{1},总记录数:{2},总页数:{3},是否有下一页:{4},是否有上一页:{5}", plist1.PageIndex, plist1.PageSize, plist1.TotalCount, plist1.TotalPages, plist1.HasNextPage, plist1.HasPreviousPage);
+            pIndex = 3;
+            var query6 = criteria.AsQueryPaged(pIndex, pSize);
+            var plist2 = localDy.Done(query6).AsTPageList<tb_user>();
+            Console.WriteLine("当前页:{0},每页大小:{1},总记录数:{2},总页数:{3},是否有下一页:{4},是否有上一页:{5}", plist2.PageIndex, plist2.PageSize, plist2.TotalCount, plist2.TotalPages, plist2.HasNextPage, plist2.HasPreviousPage);
+
+
+            //AsKeyValues 转置输出，画图、统计时比较有用
+            /*
+            colName1 | colName2 | colName3
+            ------------------------------
+            1        | 2        | 3       
+            4        | 5        | 6       
+            7        | 8        | 9
+            ==>
+            colName1:[1,4,7]       
+            colName2:[2,5,8]       
+            colName3:[3,6,9]       
+            */
+            var query7 = new DyQuery<tb_user>().Where(t1 => t1.用户名.Dy_Contains("0")).Select(t1 => new { t1.账号, t1.用户名, t1.消费能力 }).AsQuery();
+            var keyValues = localDy.Done(query7).AsKeyValues();
+            foreach (var key in keyValues.Keys) {
+                Console.WriteLine("Key:{0},Values:{1}", key, string.Join(",", keyValues[key].ToArray()));
+            }
+
+            //AsDyT 动态对象 与 AsT类似 返回第一行数据
+            var query8 = new DyQuery<tb_user>().Where(t1 => t1.用户名.Dy_Contains("00")).Select(t1 => new { t1.账号, t1.用户名, t1.消费能力 }).AsQuery();
+            var dynamicObj = localDy.Done(query8).AsDyT();
+            Console.WriteLine("账号:{0},用户名:{1},消费能力:{2}", dynamicObj.账号, dynamicObj.用户名, dynamicObj.消费能力);
+
+            //AsDyTList  与 AsTList类似 返回列表
+            var query9 = new DyQuery<tb_user>().Where(t1 => t1.用户名.Dy_Contains("00")).Select(t1 => new { t1.账号, t1.用户名, t1.消费能力 }).AsQuery();
+            var dynamicObjList = localDy.Done(query9).AsDyTList();
+            foreach (var dyObj in dynamicObjList) {
+                Console.WriteLine("账号:{0},用户名:{1},消费能力:{2}", dyObj.账号, dyObj.用户名, dyObj.消费能力);
+            }
+
+            //AsTree 树结构  分类处理、如省市区、商品的分类
+            var query10 = new DyQuery<tb_categories>().AsQuery();
+            var treeNodeRoot = localDy.Done(query10).AsTree<tb_categories>((t1, t2) => t1.父ID == t2.子ID);
+            Console.WriteLine(treeNodeRoot.ToString());
+            //树搜索 引入 kQL.orm.results 命名空间
+            //ConvertTTreeToTList 树节点转成List列表
+            //var treeToList = tree.ConvertTTreeToTList();//不输出跟节点
+            var treeToList = treeNodeRoot.ConvertTTreeToTList(true); //输出跟节点
+            Console.WriteLine("treeToList数量:{0}",treeToList.Count);
+            //FindTTreeNode
+            tb_categories category = new tb_categories {
+                分类名称 = "台式机"
+            };
+            var findTreeNode = treeNodeRoot.FindTTreeNode(category, (treeNode, searchCategoryInstance) => treeNode.Current.分类名称 == searchCategoryInstance.分类名称);//其中searchCategoryInstance 就是 category
+            Console.WriteLine(findTreeNode.ToString());
+            //DFS_FlagTree 深度优先将路径上的[TreeNode->Flag]标记为1，应用场景 树型复选框，选中某节点，节点上级和下级节点都要选中
+            treeNodeRoot.DFS_FlagTree(category, (treeNode, searchCategoryInstance) => treeNode.Current.分类名称 == searchCategoryInstance.分类名称);
+            Console.WriteLine("---------DFS_FlagTree 节点标记------");
+            Console.WriteLine(treeNodeRoot.ToString());
+            //BFS_CutFlagTree 广度优先路径上的[TreeNode->Flag]进行剪枝，应用场景 树型复选框，选中某节点，节点上级和下级节点都要选中，将所有选中的节点返回
+            treeNodeRoot.BFS_CutFlagTree();
+            Console.WriteLine("---------BFS_CutFlagTree 节点剪枝------");
+            Console.WriteLine(treeNodeRoot.ToString());
+            /****** DFS_FlagTree 与 BFS_CutFlagTree 一般情况都是要配合使用，先对节点标记，再对节点剪枝 ******/
+
+
+
+            //一对一、一对多 AsT_OneOne、AsTList_OneOne、AsT_OneMany、AsTList_OneMany 
+            var query11 = new DyQuery<tb_order>(t2 => t2)
+                         .Join<tb_order_detail>(JoinWay.InnerJoin, (t2, t3) => t2.订单ID == t3.订单ID)
+                         .Order<DateTime>(OrderWay.Asc, t2 => t2.订单时间)
+                         .Select<tb_order>(t2 => new { t2.订单ID, t2.账号 ,t2.订单名称})
+                         .Select<tb_order_detail>(t3 => new { t3.订单ID, t3.订单明细ID, t3.产品名称, t3.支付价 })
+                         .AsQuery();
+            //AsT_OneOne 单条 
+            var r0 = localDy.Done(query11).AsT_OneOne<tb_order, tb_order_detail>();
+            Console.WriteLine("AsT_OneOne");
+            Console.WriteLine("{0},{1}", r0.Item1.订单ID, r0.Item1.账号);
+            Console.WriteLine("{0},{1},{2}", r0.Item2.订单ID, r0.Item2.产品名称, r0.Item2.支付价);
+
+            //AsTList_OneOne 多条
+            var r1 = localDy.Done(query11).AsTList_OneOne<tb_order, tb_order_detail>();
+            Console.WriteLine("AsTList_OneOne");
+            foreach (var r in r1) { 
+                Console.WriteLine("{0},{1}", r.Item1.订单ID, r.Item1.账号);
+                Console.WriteLine("{0},{1},{2},{3}", r.Item2.订单ID, r.Item2.订单明细ID, r.Item2.产品名称, r.Item2.支付价); 
+            }
+
+            //AsT_OneMany 返回单条,一般情况下无什么意义
+            var r2 = localDy.Done(query11).AsT_OneMany<tb_order, tb_order_detail>();
+            Console.WriteLine("{0},{1}", r2.Item1.订单ID, r2.Item1.账号);
+            foreach (var r2_0 in r2.Item2) { 
+                Console.WriteLine("--{0},{1},{2}", r0.Item2.订单ID, r0.Item2.产品名称, r0.Item2.支付价);
+            }
+
+            //AsTList_OneMany 返回多条  
+            // 指定分组 one => new tb_order { 账号 = one.账号 }，即对结果集Table的，主表字段进行过滤 
+            var r3 = localDy.Done(query11).AsTList_OneMany<tb_order, tb_order_detail>(one => new tb_order { 账号 = one.账号 });
+            /** new 主表类型，这里 new tb_order , 只要属性字段，“one.账号”无实际意义  ，也可以写成以下形式，与上一条等价 **/
+            /****即，只认对象类型中的属性名称 ****/
+            var r4 = localDy.Done(query11).AsTList_OneMany<tb_order, tb_order_detail>(one => new tb_order { 账号 = "" });
+            foreach (var oneMany in r4) {
+                Console.WriteLine("账号:{0},订单数量:{1}", oneMany.Item1.账号, oneMany.Item2.Count);
+            }
+
+            //AsTList_OneMany 根据多个字段分组
+            var r5 = localDy.Done(query11).AsTList_OneMany<tb_order, tb_order_detail>(one => new tb_order { 账号 = one.账号, 订单ID = one.订单ID });
+            //以下等价
+            var r6 = localDy.Done(query11).AsTList_OneMany<tb_order, tb_order_detail>(one => new tb_order { 账号 = "", 订单ID = Guid.Empty });
+            foreach (var oneMany in r6)
+            {
+                Console.WriteLine("订单名称:{0},账号:{1},订单数量:{2}", oneMany.Item1.订单名称, oneMany.Item1.账号, oneMany.Item2.Count);
+            }
+```
+
 >综上，不管怎样，当你需要访问数据库时就3个步骤
 
 ```
@@ -428,7 +650,6 @@ DyResult类型：查询的结果，执行dy操作后，将结果集DataSet保存
                     )
                     .Select(t1 => new { t1.账号, t1.用户名 })
                 .AsQuery();
-
 ```
 >当指定了表别名后，之后的Join,Where,Group,Select等方法中，表别名都要保持一致
 
@@ -449,10 +670,15 @@ DyResult类型：查询的结果，执行dy操作后，将结果集DataSet保存
         /// TopN DyQuery
         /// </summary> 
         IDyQuery AsQueryTopN(int N);
+        /// <summary>
+        /// 中间表方式
+        /// </summary> 
+        DyXTable AsXTable();
 ```
 > var query = new DyQuery<T>()....AsQuery();//通用标准接口，【增、删、改、查】
 > var query = new DyQuery<T>()....AsQueryPaged();//分页接口，【查】
-> var query = new DyQuery<T>()....AsQueryTopN();//前N条数据接口，【查】
+> var query = new DyQuery<T>()....AsQueryTopN();//前N条数据接口，【查】 
+> var xTable = new DyQuery<T>()....AsXTable();//定义中间表
 
 
 
@@ -919,7 +1145,37 @@ DyResult类型：查询的结果，执行dy操作后，将结果集DataSet保存
 
 
 
-##### 14、强大的DyResult，继承自IDyResult接口
+##### 14、IMapXTable<TLeft> 设置中间表别名与中间表的映射
+
+1. 通过**别名** 与 **DyXTable** 实例映射。
+2. 通过**别名** 与 **DyXTable 表达式** 映射，通常用于**表值函数** 。其中TRight类型表示表值函数中需要用到的对应表的计算字段。
+
+```
+ public interface IMapXTable<TLeft>
+    {
+        ICriteria<TLeft> MapXTable<AliasType>(Expression<Func<AliasType, AliasType>> aliasExpr, DyXTable xTable);
+
+        ICriteria<TLeft> MapXTable<AliasType, TRight>(Expression<Func<AliasType, AliasType>> aliasExpr,
+            Expression<Func<TRight, DyXTable>> Dy_UDF_xTableExpr);
+        ICriteria<TLeft> MapXTable<AliasType, TRight1, TRight2>(Expression<Func<AliasType, AliasType>> aliasExpr,
+            Expression<Func<TRight1, TRight2, DyXTable>> Dy_UDF_xTableExpr);
+        ICriteria<TLeft> MapXTable<AliasType, TRight1, TRight2, TRight3>(Expression<Func<AliasType, AliasType>> aliasExpr,
+            Expression<Func<TRight1, TRight2, TRight3, DyXTable>> Dy_UDF_xTableExpr);
+        ICriteria<TLeft> MapXTable<AliasType, TRight1, TRight2, TRight3, TRight4>(Expression<Func<AliasType, AliasType>> aliasExpr,
+            Expression<Func<TRight1, TRight2, TRight3, TRight4, DyXTable>> Dy_UDF_xTableExpr);
+        ICriteria<TLeft> MapXTable<AliasType, TRight1, TRight2, TRight3, TRight4, TRight5>(Expression<Func<AliasType, AliasType>> aliasExpr,
+            Expression<Func<TRight1, TRight2, TRight3, TRight4, TRight5, DyXTable>> Dy_UDF_xTableExpr);
+        ICriteria<TLeft> MapXTable<AliasType, TRight1, TRight2, TRight3, TRight4, TRight5, TRight6>(Expression<Func<AliasType, AliasType>> aliasExpr,
+            Expression<Func<TRight1, TRight2, TRight3, TRight4, TRight5, TRight6, DyXTable>> Dy_UDF_xTableExpr);
+        ICriteria<TLeft> MapXTable<AliasType, TRight1, TRight2, TRight3, TRight4, TRight5, TRight6, TRight7>(Expression<Func<AliasType, AliasType>> aliasExpr,
+            Expression<Func<TRight1, TRight2, TRight3, TRight4, TRight5, TRight6, TRight7, DyXTable>> Dy_UDF_xTableExpr);
+        ICriteria<TLeft> MapXTable<AliasType, TRight1, TRight2, TRight3, TRight4, TRight5, TRight6, TRight7, TRight8>(Expression<Func<AliasType, AliasType>> aliasExpr,
+            Expression<Func<TRight1, TRight2, TRight3, TRight4, TRight5, TRight6, TRight7, TRight8, DyXTable>> Dy_UDF_xTableExpr);
+
+    }
+```
+
+##### 15、强大的DyResult，继承自IDyResult接口
 
 ```
     public interface IDyResult
@@ -989,7 +1245,7 @@ TreeNode<T>.IsLeaf ==>> 是否叶子节点
 TreeNode<T>.ParentNode ==>> 父节点TreeNode类型
 TreeNode<T>.Children ==>> 子节点TreeNode类型
 ```
->具体看demo程序中SampleCode->测试_结果集
+>DyResult内容较多，具体请下载后，查看demo程序中SampleCode->测试_结果集
 
 
 
@@ -1049,7 +1305,7 @@ TreeNode<T>.Children ==>> 子节点TreeNode类型
 
 
 
-##### 3、表、视图、存储过程约定规则
+##### 3、表、视图、存储过程、用户自定义函数（UDF）约定规则
 ```
  //存储过程
  create proc sp_get_order_all
@@ -1065,7 +1321,7 @@ TreeNode<T>.Children ==>> 子节点TreeNode类型
      
     }
 
-//视图 => 具体操作跟表实体对象一致    
+//视图 => 具体操作跟【表】实体对象一致    
 create view  v_user_order
 as 
 	select t1.订单名称,t1.订单ID,t2.购买数量,t1.账号 from tb_order t1
@@ -1079,10 +1335,78 @@ as
         public Int32 购买数量 { get; set; }
         public String 账号 { get; set; } 
     }
+    
+//用户自定义函数
+1. 标量函数
+CREATE FUNCTION [dbo].[fn_IsDateout] (@BDate datetime) returns nvarchar(20)
+AS
+BEGIN
+    DECLARE @myresult nvarchar(20)
+    IF (datediff(day,@BDate,getdate())>30)
+    BEGIN
+    SET @myresult='已过期'
+    end
+    else    
+    begin
+    set @myresult='未到期'
+    end
+    RETURN (@myresult)
+END
+go
+CREATE function [dbo].[fn_IsOut](@val int) returns varchar(20)
+ as
+ begin
+	declare @ret varchar(20)
+	if @val > 5
+		set @ret = '偏大'
+	else
+		set @ret = '偏小'
+	return @ret
+ end 
+2. 表值函数
+CREATE function [dbo].[fn_test1]() returns @t table( 账号 varchar(20),用户名 varchar(20) )
+as
+begin
+     insert into @t(账号,用户名) 
+	  select top 100 账号,用户名 from tb_user
+	  return ;
+end
+go
+CREATE function [dbo].[fn_test2](@账号 varchar(20),@用户名 varchar(20)) returns @t table( 账号 varchar(20),用户名 varchar(20) )
+as
+begin
+     insert into @t(账号,用户名) 
+	  select top 100 账号,用户名 from tb_user
+	  return ;
+end
+将生成Dy_UDF.cs文件=====>>>>>>
+
+/* 本代码由kQL.orm.cmdTool工具自动生成  
+   contact:chwmqq@126.com 
+   created time:2017-06-12 22:20:59*/
+using System;
+using System.ComponentModel; 
+using kQL.orm.expr;
+
+namespace kQL.orm.demo.models
+{
+    public class Dy_UDF
+    {
+public static String fn_IsDateout ( DateTime @BDate ) { throw new Exception();}
+public static DyXTable fn_test1 ( ) { throw new Exception();} public class FModel_fn_test1 { public String 账号{get;set;} public String 用户名{get;set;} }
+public static String fn_IsOut ( Int32 @val ) { throw new Exception();}
+public static DyXTable fn_test2 ( String @账号,String @用户名 ) { throw new Exception();} public class FModel_fn_test2 { public String 账号{get;set;} public String 用户名{get;set;} } 
+    }
+
+}
+
+其中 ：
+1. 标量函数生成静态方法
+2. 表值函数生成静态方法，和一个 FModel_ 开头的模型类
 
 ```
-> **约定，下划线_开头的存储过程，或视图，将不会生成实体文件。有时为了维护方便，会在数据库中建立一些日常维护的脚本，不需要给程序调用，这种场景下，可以使用下划线_开头的存储过程或视图
-> 通常表以tb开头、实体以v开头、存储过程以sp开头
+> **约定，下划线_开头的表、视图、存储过程、用户自定义函数（UDF），将不会生成实体文件。有时为了维护方便，会在数据库中建立一些日常维护的脚本，不需要给程序调用，这种场景下，可以使用下划线_开头的表、视图、存储过程、用户自定义函数（UDF）
+> 约定通常表以tb开头、视图以v开头、存储过程以sp开头、自定义函数（udf）以fn开头
 
 
 
@@ -1157,9 +1481,7 @@ end
                       ).Where(t1 => t1.支付价 > 30)
                       .AsQuery();                      
 ```
-> t1.产品名称 == t2.产品名称.Dy_Substring(1, 4) //使用t2表进行更新t1表的字段
-
-
+> t1.产品名称 == t2.产品名称.Dy_Substring(1, 4) //使用t2表进行更新t1表的字段，可以通过**DyXTable** 操作更加复杂的更新。
 
 ##### 7、当结果集返回多个同名字段时、 默认填充第一个字段
 
@@ -1287,6 +1609,143 @@ var dtoList = dy.Query(query).AsTList<Order_DTO>();
 </appSettings>
 ```
 
+##### 13、数据同步
+
+再次认识Dy类，Dy类是数据库操作的直接类，可以**通过Dy类的构造函数连接不同的数据库** 
+
+如上节，配置了remoteServer配置项，var remoteDy = new Dy("remoteServer"); 就构造好新的Dy操作类了。
+
+默认情况下，Dy类直接取kQL.orm.connstr配置项。即 var localDy = new Dy();
+
+```
+           //场景一：本地库与远程库 表结构一致>>单表->同步到远程服务器
+           //kQL.orm.demo命名空间下为本地库的实体类
+           //kQL.orm.remotemodels命名空间下为远程库的实体类
+           var localDy = new Dy();//本地库执行者
+           var remoteDy = new Dy("remoteServer");//远程库执行者
+            Console.WriteLine("开始执行导入远程服务器"); 
+            var query1 = new DyQuery<kQL.orm.demo.tb_user>().AsQuery();
+            var result = localDy
+            .CopyToRemote<kQL.orm.demo.remotemodels.tb_user>(query1, remoteDy);
+            Console.WriteLine("完成导入远程服务器，本次执行毫秒:{0}", result.Item1);
+            Console.WriteLine();
+            
+           //场景二：本地库与远程库 表结构不一致>>多表的组合->同步到远程服务器
+           //****灵活定义、快速同步
+            var query2 = new DyQuery<tb_order>(t2 => t2)
+       .Join<tb_order_detail>(JoinWay.InnerJoin, t3 => t3)
+       .On<tb_order, tb_order_detail>((t2, t3) => t2.订单ID == t3.订单ID) 
+       .Group(t2 => t2.订单ID).Group(t2 => t2.账号)
+       .Having<tb_order_detail>(WhereWay.And, 
+                                   t3 => t3.订单ID.Dy_Count() > 5
+                        ).Select<tb_order, tb_order_detail>(
+                            (t2, t3) => new
+                            {
+                                t2.订单ID,
+                                t2.账号,
+                                明细数量 = t3.订单ID.Dy_Count(),
+                                总金额Max = t3.支付价.Dy_Max(),
+                                总金额Min = t3.支付价.Dy_Min(),
+                                总金额Sum = t3.支付价.Dy_Sum(),
+                                总金额Avg = t3.支付价.Dy_Avg(),
+                                R金额 = ((t3.支付价.Dy_Max() + t3.支付价.Dy_Min() - t3.支付价.Dy_Sum() * t3.支付价.Dy_Avg()) / t3.支付价.Dy_Min()).Dy_Convert<decimal, decimal>("decimal(18,2)") //四则运算及转型
+                            }
+                            ).AsQuery();
+            var result = localDy.CopyToRemote<kQL.orm.demo.remotemodels.tb_order_info>(query2, remoteDy);
+            Console.WriteLine("本地多表的组合->同步到远程服务器->本次执行毫秒:{0}", result.Item1);
+```
+##### 14、用户自定义函数（UDF：标量函数、表值函数）
+
+```
+            //标量函数=>Dy_UDF.fn_IsDateout、Dy_UDF.fn_IsOut
+            var query2 =
+                new DyQuery<tb_user>()
+                .Where(t1 => t1.会员等级 > 100)
+                //.Where(t1 => t1.会员等级 > 50 && t1.性别 == true && t1.注册日期 == null && t1.上次登录日期 !=null)
+                .Select(t1 => new
+                {
+                    状态 = Dy_UDF.fn_IsDateout(t1.上次登录日期),
+                    t1.账号,
+                    t1.用户名,
+                    IsOut = Dy_UDF.fn_IsOut(t1.用户名.Dy_Right(1).Dy_Cast<string, int>("int")),
+                    上次登录日期 = Dy_UDF.fn_IsDateout(t1.上次登录日期.Dy_IsNull(DateTime.Now)),
+                    日期Cast = t1.上次登录日期.Dy_IsNull("20170601").Dy_Cast<string, string>("varchar"),
+                    日期Convert = t1.上次登录日期.Dy_IsNull("20170601").Dy_Convert<string, string>(111, "varchar")
+                }).AsQueryTopN(10);
+            var result2 = new Dy().Done(query2);
+            Console.WriteLine(result2.AsJson());
+
+            //表值函数=>Dy_UDF.fn_test1()
+            var query = new DyQuery<DyXTable>().Select<Dy_UDF.FModel_fn_test1>(t1 => new { t1.用户名 })
+               .MapXTable<DyXTable, DyXTable>(t1 => t1, t1 => Dy_UDF.fn_test1())
+               .AsQueryTopN(10);
+            Console.WriteLine(new Dy().Done(query).AsJson());
+```
+
+##### 15、中间表DyXTable，通过MapXTable函数设置映射关系
+```
+            //根据中间表查询
+            var xtable0 = new DyQuery<tb_order>(t2 => t2)
+                 Join<tb_order_detail>(JoinWay.InnerJoin, t3 => t3).On<tb_order, tb_order_detail>((t2, t3) => t2.订单ID == t3.订单ID)
+                       .Group(t2 => t2.订单ID).Group(t2 => t2.账号)
+                       .Select<tb_order, tb_order_detail>((t2, t3) => new { t2.订单ID, t2.账号, 明细数量 = t3.订单ID.Dy_Count() })
+                       .AsXTable();
+
+
+            var query0 = new DyQuery<tb_user>()
+                .Join<DyXTable>(JoinWay.InnerJoin, (t1, xt1) => t1.账号 == xt1.Dy_X_Column<tb_order, string>(m => m.账号))
+                .Select(t1=> new { t1.账号,t1.用户名})
+                .Select<DyXTable>(xt1 =>
+                        new
+                        { 
+                            订单ID = xt1.Dy_X_Column<tb_order, Guid>(x1 => x1.订单ID),//可以借助tb_order类型推导，推荐使用方式
+                            明细数量 = xt1.Dy_X_Column<int>("明细数量"),//中间表的返回结果、无法推导
+                        }).MapXTable<DyXTable>(xt1 => xt1, xtable0);
+            
+            Console.WriteLine(new Dy().Done(query0).AsJson());
+
+
+
+            //根据中间表更新>>>>>>更新订单总金额
+            //定义中间表
+            var xTable1 = new DyQuery<tb_order_detail>(t2 => t2)
+                              .Group(t2 => t2.订单ID)
+                              .Select(t2 => new { t2.订单ID, 总金额 = t2.支付价.Dy_Sum(), })
+                       .AsXTable();
+
+            //update from 方式更新 需要JOIN表
+            var query1 = new DyQuery<tb_order>().Update()
+                .Set<DyXTable>((t1, xt1) => t1.总金额 == xt1.Dy_X_Column<decimal>("总金额"))
+                .Join<DyXTable>( JoinWay.InnerJoin, (t1, xt1) => t1.订单ID == xt1.Dy_X_Column<tb_order, Guid>(m => m.订单ID)) 
+                .MapXTable<DyXTable>(xt1 => xt1, xTable1)
+                .AsQuery();
+
+            Console.WriteLine(new Dy().Done(query1).AsJson());
+
+
+            //delete from 
+            var xTable2 = new DyQuery<tb_order_detail>(t2 => t2)
+                             .Group(t2 => t2.订单ID)
+                             .Where(t2=>t2.支付价>10)
+                             .Select(t2 => new { t2.订单ID, 总数量 = DyExtFn.Dy_CountN(1), })
+                      .AsXTable();
+
+            var query2 = new DyQuery<tb_order>().Delete()
+                .Where(t1 => t1.总金额 > 300).Exists(WhereWay.And,
+                        new DyQuery<DyXTable>(t2 => t2)
+                        .Where<tb_order, DyXTable>((t1, t2) => t1.订单ID == t2.Dy_X_Column<tb_order, Guid>(m => m.订单ID) && t2.Dy_X_Column<int>("总数量") > 2)
+                        .MapXTable<DyXTable>(t2 => t2, xTable2) 
+                        .Select(t2 => 1)
+                ).AsQuery();
+
+            Console.WriteLine(new Dy().Done(query2).AsJson());
+```
+
+
+
+
+
+
 
 
 #### 四、扩展函数速查表
@@ -1385,18 +1844,22 @@ var dtoList = dy.Query(query).AsTList<Order_DTO>();
 | Dy_IsDate    | isdate    |      |
 
 ##### 自定义扩展函数 
-| 扩展函数名            | DB函数名                          | 说明    |
-| :--------------- | :----------------------------- | :---- |
-| Dy_N             | 数字常量                           |       |
-| Dy_StartsWith    | like '[参数]%'                   |       |
-| Dy_EndsWith      | like '%[参数]'                   |       |
-| Dy_Contains      | like '%[参数]%'                  |       |
-| Dy_StartsWithNot | not like '[参数]%'               |       |
-| Dy_EndsWithNot   | not like '%[参数]'               |       |
-| Dy_ContainsNot   | not like '%[参数]%'              |       |
-| Dy_StrGT         | [字段名] > '[参数]'                 |       |
-| Dy_StrGE         | [字段名] >= '[参数]'                |       |
-| Dy_StrLT         | [字段名] < '[参数]'                 |       |
-| Dy_StrLE         | [字段名] <= '[参数]'                |       |
-| Dy_In            | in ([参数1],[参数2],[参数3],...)     | 支持子查询 |
-| Dy_InNot         | not in ([参数1],[参数2],[参数3],...) | 支持子查询 |
+| 扩展函数名            | DB函数名                          | 说明                                       |
+| :--------------- | :----------------------------- | :--------------------------------------- |
+| **Dy_X_Column**  | 取中间表字段，或推导中间表字段                | 通常与DyXTable中间表合用                         |
+| Dy_N             | 数字常量                           | where 1 = 0 可以 Where(t1=> DyExtFn.Dy_N(1) == 0 ) |
+| Dy_StartsWith    | like '[参数]%'                   |                                          |
+| Dy_EndsWith      | like '%[参数]'                   |                                          |
+| Dy_Contains      | like '%[参数]%'                  |                                          |
+| Dy_StartsWithNot | not like '[参数]%'               |                                          |
+| Dy_EndsWithNot   | not like '%[参数]'               |                                          |
+| Dy_ContainsNot   | not like '%[参数]%'              |                                          |
+| Dy_StrGT         | [字段名] > '[参数]'                 |                                          |
+| Dy_StrGE         | [字段名] >= '[参数]'                |                                          |
+| Dy_StrLT         | [字段名] < '[参数]'                 |                                          |
+| Dy_StrLE         | [字段名] <= '[参数]'                |                                          |
+| Dy_In            | in ([参数1],[参数2],[参数3],...)     | 支持子查询                                    |
+| Dy_InNot         | not in ([参数1],[参数2],[参数3],...) | 支持子查询                                    |
+
+
+
